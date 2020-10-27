@@ -132,107 +132,80 @@ NOTES:
 
 #endif
 /* 
- * isAsciiDigit - return 1 if 0x30 <= x <= 0x39 (ASCII codes for characters '0' to '9')
- *   Example: isAsciiDigit(0x35) = 1.
- *            isAsciiDigit(0x3a) = 0.
- *            isAsciiDigit(0x05) = 0.
+ * conditional - same as x ? y : z 
+ *   Example: conditional(2,4,5) = 4
  *   Legal ops: ! ~ & ^ | + << >>
- *   Max ops: 15
+ *   Max ops: 16
  *   Rating: 3
  */
-int isAsciiDigit(int x)   //function_1
-{
-  int up_num = x + (~58 + 1);  //最高位为1
-  int low_num = x + (~48 + 1);   //最高位是0
-  
-  int Is_up_legal = (!((up_num >> 31) + 1));
-  int Is_down_legal = ((low_num >> 31) + 1);
-  
-  return   (Is_up_legal & Is_down_legal);
-
+int conditional(int x, int y, int z) {
+  return 2;
 }
 /* 
- * anyEvenBit - return 1 if any even-numbered bit in word set to 1
- *   Examples anyEvenBit(0xA) = 0, anyEvenBit(0xE) = 1
- *   Legal ops: ! ~ & ^ | + << >>
- *   Max ops: 12
- *   Rating: 2
- */
-int anyEvenBit(int x) 
-{
-  int x1 = x >> 8;
-  int x2 = x1 >> 8;
-  int x3 = x2 >> 8;
-  return !!( ( x | x1 | x2 | x3 )& 0x55);
-}
-/* 
- * copyLSB - set all bits of result to least significant bit of x
- *   Example: copyLSB(5) = 0xFFFFFFFF, copyLSB(6) = 0x00000000
- *   Legal ops: ! ~ & ^ | + << >>
- *   Max ops: 5
- *   Rating: 2
- */
-int copyLSB(int x) 
-{
-  int temp = x & 1;
-  return (~temp + 1);
-}
-/* 
- * leastBitPos - return a mask that marks the position of the
- *               least significant 1 bit. If x == 0, return 0
- *   Example: leastBitPos(96) = 0x20
+ * isNonNegative - return 1 if x >= 0, return 0 otherwise 
+ *   Example: isNonNegative(-1) = 0.  isNonNegative(0) = 1.
  *   Legal ops: ! ~ & ^ | + << >>
  *   Max ops: 6
- *   Rating: 2 
+ *   Rating: 3
  */
-int leastBitPos(int x) 
-{
-  return (~x+1) & x;
+int isNonNegative(int x) {
+  return 2;
 }
 /* 
- * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
- *  Round toward zero
- *   Examples: divpwr2(15,1) = 7, divpwr2(-33,4) = -2
+ * isGreater - if x > y  then return 1, else return 0 
+ *   Example: isGreater(4,5) = 0, isGreater(5,4) = 1
  *   Legal ops: ! ~ & ^ | + << >>
- *   Max ops: 15
- *   Rating: 2
+ *   Max ops: 24
+ *   Rating: 3
  */
-int divpwr2(int x, int n) 
-{
-  int op = (x >> 31) + 1;
-  int temp  =   x  >> n;
-  int temp2 = temp << n;
-  int Is_exact_division = !!(temp2 ^ x);
-  return (temp + (    (!op) & (!!n) & (Is_exact_division)  )   );
+int isGreater(int x, int y) {
+  return 2;
 }
-
-
-/*
- * bitCount - returns count of number of 1's in word
- *   Examples: bitCount(5) = 2, bitCount(7) = 3
+/* 
+ * absVal - absolute value of x
+ *   Example: absVal(-1) = 1.
+ *   You may assume -TMax <= x <= TMax
  *   Legal ops: ! ~ & ^ | + << >>
- *   Max ops: 40
+ *   Max ops: 10
  *   Rating: 4
  */
-int bitCount(int x) 
-{
-  int mask = (0x11 <<24) | (0x11 << 16) | (0x11 << 8) |(0x11) ;
-
-  int temp = x & mask;
-  x = x >> 1;
-  temp = temp + (x & mask); 
-  x = x >> 1;
-  temp = temp + (x & mask); 
-  x = x >> 1;
-  temp = temp + (x & mask); 
-  
-  return ((temp & 0xf) + 
-          ( (temp >> 4) & 0xf )+ 
-          ( (temp >> 8) & 0xf )+
-          ( (temp >> 12) & 0xf )+
-          ( (temp >> 16) & 0xf )+
-          ( (temp >> 20) & 0xf )+
-          ( (temp >> 24) & 0xf )+
-          ( (temp >> 28) & 0xf ));
+int absVal(int x) {
+  return 2;
 }
-
+/*
+ * isPower2 - returns 1 if x is a power of 2, and 0 otherwise
+ *   Examples: isPower2(5) = 0, isPower2(8) = 1, isPower2(0) = 0
+ *   Note that no negative number is a power of 2.
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 20
+ *   Rating: 4
+ */
+int isPower2(int x) {
+  return 2;
+}
+/* 
+ * float_neg - Return bit-level equivalent of expression -f for
+ *   floating point argument f.
+ *   Both the argument and result are passed as unsigned int's, but
+ *   they are to be interpreted as the bit-level representations of
+ *   single-precision floating point values.
+ *   When argument is NaN, return argument.
+ *   Legal ops: Any integer/unsigned operations incl. ||, &&. also if, while
+ *   Max ops: 10
+ *   Rating: 2
+ */
+unsigned float_neg(unsigned uf) {
+ return 2;
+}
+/* 
+ * float_i2f - Return bit-level equivalent of expression (float) x
+ *   Result is returned as unsigned int, but
+ *   it is to be interpreted as the bit-level representation of a
+ *   single-precision floating point values.
+ *   Legal ops: Any integer/unsigned operations incl. ||, &&. also if, while
+ *   Max ops: 30
+ *   Rating: 4
+ */
+unsigned float_i2f(int x) {
+  return 2;
+}
