@@ -139,7 +139,7 @@ NOTES:
  *   Rating: 3
  */
 int conditional(int x, int y, int z) {
-  return 2;
+  return ((!x+~1+1)&y)|((~!x+1)&z);
 }
 /* 
  * isNonNegative - return 1 if x >= 0, return 0 otherwise 
@@ -149,7 +149,7 @@ int conditional(int x, int y, int z) {
  *   Rating: 3
  */
 int isNonNegative(int x) {
-  return 2;
+  return !((x>>31)&0x01);
 }
 /* 
  * isGreater - if x > y  then return 1, else return 0 
@@ -159,7 +159,11 @@ int isNonNegative(int x) {
  *   Rating: 3
  */
 int isGreater(int x, int y) {
-  return 2;
+	int signofx=x>>31;
+	int signofy=y>>31;
+	int signequal=(!(signofx ^ signofy)) & ((~y + x) >> 31);
+	int signnequal=signofx & !signofy;
+	return !(signequal | signnequal);
 }
 /* 
  * absVal - absolute value of x
@@ -170,7 +174,8 @@ int isGreater(int x, int y) {
  *   Rating: 4
  */
 int absVal(int x) {
-  return 2;
+	int sign_x = x >> 31;
+	return((x ^ (sign_x)) + (1 + ( ~(sign_x))));
 }
 /*
  * isPower2 - returns 1 if x is a power of 2, and 0 otherwise
@@ -181,7 +186,8 @@ int absVal(int x) {
  *   Rating: 4
  */
 int isPower2(int x) {
-  return 2;
+  int ret = ((!(x&(x+~0))) & ((~(x>>31)&(!!x))));
+  return ret;
 }
 /* 
  * float_neg - Return bit-level equivalent of expression -f for
@@ -195,7 +201,8 @@ int isPower2(int x) {
  *   Rating: 2
  */
 unsigned float_neg(unsigned uf) {
- return 2;
+	if((((uf>>23)&0xff)^0xff)||!(uf&((1<<23)-1))) uf=(1<<31)^uf;
+	return uf;
 }
 /* 
  * float_i2f - Return bit-level equivalent of expression (float) x
@@ -207,5 +214,27 @@ unsigned float_neg(unsigned uf) {
  *   Rating: 4
  */
 unsigned float_i2f(int x) {
-  return 2;
+	//注意这里定义的是unsigned，右移和左移都会是逻辑移位，即补0 
+	unsigned absx,sign,flag,temp,aftershift,shiftnum;
+	absx=x;
+	sign=x&(1<<31);//符号位
+	if(sign) absx=-x;
+	aftershift=absx; 
+	if(!x) return 0; 
+	shiftnum=0;
+	//左移shiftnum-1位 
+	while(1)
+	{
+		temp=aftershift;
+		//aftershift要多移一位，aftershift的高位往低位数共23位即float的尾码部分 
+		aftershift=aftershift<<1;
+		shiftnum++;
+		if(temp&0x80000000) break;//1000 0000 0000…… ，最高位为1 
+	}
+	//aftershift的前23位要充当float的尾码部分，四舍五入，判断进位 
+  	if((aftershift&0x01ff)>0x0100)  flag=1;//后9位中 第1位为1，后8位有1 
+	else if((aftershift&0x03ff)==0x0300) flag=1;//后9位中 第一位为1，后8位为0
+	else flag=0;
+	return  sign+((159-shiftnum)<<23)+(aftershift>>9)+flag;
+
 }
